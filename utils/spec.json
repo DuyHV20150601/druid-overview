@@ -1,0 +1,173 @@
+{
+  "type": "index_parallel",
+  "spec": {
+    "ioConfig": {
+      "type": "index_parallel",
+      "inputSource": {
+        "type": "local",
+        "baseDir": "/opt/druid/datasource_files",
+        "filter": "*.csv"
+      },
+      "inputFormat": {
+        "type": "csv",
+        "findColumnsFromHeader": true
+      }
+    },
+    "tuningConfig": {
+      "type": "index_parallel",
+      "partitionsSpec": {
+        "type": "dynamic"
+      }
+    },
+    "dataSchema": {
+      "dataSource": "datasource_files",
+      "timestampSpec": {
+        "column": "install_date_utc",
+        "format": "auto"
+      },
+      "dimensionsSpec": {
+        "dimensions": [
+          {
+            "type": "long",
+            "name": "int64_field_0"
+          },
+          {
+            "type": "long",
+            "name": "install_id"
+          },
+          "install_matched_on",
+          "install_status",
+          "install_date_adjusted",
+          "install_kochava_device_id",
+          "install_matched_by",
+          "install_device_version",
+          "install_devices_ids",
+          "install_devices_ids_querystring",
+          "install_devices_idfa",
+          "install_devices_android_id",
+          "install_devices_adid",
+          "install_devices_custom",
+          "install_devices_custom_id",
+          "install_devices_waid",
+          "install_devices_ip",
+          "install_devices_email_0",
+          "install_devices_email_1",
+          "install_san_original",
+          "kochava_click_id",
+          "partner_click_id",
+          "install_click_date_utc",
+          "install_click_date_adjusted",
+          "install_impression_date_utc",
+          "install_impression_date_adjusted",
+          {
+            "type": "long",
+            "name": "attribution_tracker"
+          },
+          "attribution_tracker_name",
+          "attribution_campaign",
+          "attribution_campaign_name",
+          "attribution_tier",
+          {
+            "type": "long",
+            "name": "attribution_network"
+          },
+          "attribution_network_name",
+          "attribution_site",
+          "attribution_site_querystring",
+          "attribution_creative",
+          "attribution_creative_querystring",
+          "install_original_request",
+          "install_original_request_querystring",
+          "install_duplicate_click",
+          "install_price",
+          "install_receipt_status",
+          "install_device_ua",
+          "installgeo_continent_code",
+          "installgeo_country_code",
+          "installgeo_country_code3",
+          "installgeo_country_name",
+          "installgeo_region",
+          "installgeo_postal_code",
+          "installgeo_dma_code",
+          "installgeo_city",
+          "installgeo_area_code",
+          "installgeo_longitude",
+          "installgeo_latitude",
+          "click_month",
+          "click_status",
+          "click_network",
+          "click_network_name",
+          "click_tracker",
+          "click_tracker_name",
+          "click_campaign",
+          "click_campaign_name",
+          "click_tier",
+          "click_site",
+          "click_site_querystring",
+          "click_creative",
+          "click_creative_querystring",
+          "click_country_code",
+          "click_ip",
+          "click_device_ver",
+          "click_device_id",
+          "click_original_request",
+          "click_matched_impression",
+          "click_matched_install",
+          "click_identifiers",
+          "click_identifiers_querystring",
+          "click_identifiers_idfa",
+          "click_identifiers_android_id",
+          "click_identifiers_android_id_md5",
+          "click_identifiers_android_id_sha1",
+          "click_identifiers_adid",
+          "click_identifiers_custom",
+          "click_identifiers_waid",
+          "click_identifiers_ip",
+          "click_identifiers_email_0",
+          "click_identifiers_email_1",
+          "click_duplicate",
+          "click_device_ua",
+          "clickgeo_continent_code",
+          "clickgeo_country_code",
+          "clickgeo_country_code3",
+          "clickgeo_country_name",
+          "clickgeo_region",
+          "clickgeo_postal_code",
+          "clickgeo_dma_code",
+          "clickgeo_city",
+          "clickgeo_area_code",
+          "clickgeo_longitude",
+          "clickgeo_latitude",
+          "impression_app_id",
+          "impression_network",
+          "impression_network_name",
+          "impression_tracker",
+          "impression_tracker_name",
+          "impression_campaign",
+          "impression_campaign_name",
+          "impression_tier",
+          "impression_site",
+          "impression_creative",
+          "impression_country_code",
+          "impression_original_request",
+          "impression_matched_install",
+          "impression_matched_click",
+          "impression_ip",
+          "impression_imp_id",
+          "impression_identifiers",
+          "impression_identifiers_querystring",
+          "impression_device_ver",
+          "impression_kochava_imp_id",
+          "traffic_impression_verification_status",
+          "product_id",
+          "install_match_object"
+        ]
+      },
+      "granularitySpec": {
+        "queryGranularity": null,
+        "rollup": false,
+        "segmentGranularity": "day"
+      }
+    }
+  }
+}

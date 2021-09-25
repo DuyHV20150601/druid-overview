@@ -1,0 +1,161 @@
+version: "3.9"
+
+volumes:
+  mysql_data: # Stored in /var/lib/docker/volumes for safety
+  metadata_data: {} # Stored in /var/lib/docker/volumes for safety
+  middle_var: {} # Stored in /var/lib/docker/volumes for safety
+  historical_var: {} # Stored in /var/lib/docker/volumes for safety
+  broker_var: {} # Stored in /var/lib/docker/volumes for safety
+  coordinator_var: {} # Stored in /var/lib/docker/volumes for safety
+  router_var: {} # Stored in /var/lib/docker/volumes for safety
+  druid_shared: {} # Stored in /var/lib/docker/volumes for safety
+
+services:
+  db:
+    image: mysql:8.0
+    cap_add:
+      - SYS_NICE
+    volumes:
+      # - ./data/mysql:/var/lib/mysql # mount data of mysql to host folder,
+      - ./mysql-creation-query:/docker-entrypoint-initdb.d # copy all .sql file from host folder: mysql-query to docker-entrypoint-initdb.d folder on the container, the queries will be executed automately.
+      - metadata_data:/var/lib/mysql  # Stored in /var/lib/docker/volumes for safety
+
+    env_file:
+      - ./.env
+    ports:
+      - "3306:3306"
+    restart: always
+
+# Need 3.5 or later for container nodes
+  zookeeper:
+    container_name: zookeeper
+    image: zookeeper:3.5
+    ports:
+      - "2181:2181"
+    environment:
+      - ZOO_MY_ID=1
+    restart: always
+
+  coordinator:
+#    image: duyhv2511/druid:0.21.1-mysql
+    container_name: coordinator
+    build:
+      context: docker
+      dockerfile: druid.Dockerfile
+
+    volumes:
+      - druid_shared:/opt/shared
+      - coordinator_var:/opt/druid/var
+      - ~/.credentials:/opt/druid/.credentials
+      - ./log:/opt/druid/log
+      - ./data:/opt/druid/datasource_files
+#      - ./docker/config:/opt/druid/conf/druid/cluster/_common
+    env_file:
+      - ./.env
+    depends_on:
+      - zookeeper
+      - db
+    ports:
+      - "8081:8081"
+    command:
+      - coordinator
+    restart: always
+
+  broker:
+#    image: duyhv2511/druid:0.21.1-mysql
+    container_name: broker
+    build:
+      context: docker
+      dockerfile: druid.Dockerfile
+    volumes:
+      - broker_var:/opt/druid/var
+      - ~/.credentials:/opt/druid/.credentials
+      - ./log:/opt/druid/log
+      - ./data:/opt/druid/datasource_files
+#      - ./docker/config:/opt/druid/conf/druid/cluster/_common
+    env_file:
+      - ./.env
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8082:8082"
+    command:
+      - broker
+    restart: always
+
+  historical:
+#    image: duyhv2511/druid:0.21.1-mysql
+    container_name: historical
+    build:
+      context: docker
+      dockerfile: druid.Dockerfile
+    volumes:
+      - druid_shared:/opt/shared
+      - historical_var:/opt/druid/var
+      - ~/.credentials:/opt/druid/.credentials
+      - ./log:/opt/druid/log
+      - ./data:/opt/druid/datasource_files
+#      - ./docker/config:/opt/druid/conf/druid/cluster/_common
+    env_file:
+      - ./.env
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8083:8083"
+    command:
+      - historical
+    restart: always
+
+  middlemanager:
+#    image: duyhv2511/druid:0.21.1-mysql
+    container_name: middlemanager
+    build:
+      context: docker
+      dockerfile: druid.Dockerfile
+    volumes:
+      - druid_shared:/opt/shared
+      - middle_var:/opt/druid/var
+      - ~/.credentials:/opt/druid/.credentials
+      - ./log:/opt/druid/log
+      - ./data:/opt/druid/datasource_files
+#      - ./docker/config:/opt/druid/conf/druid/cluster/_common
+    env_file:
+      - ./.env
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8091:8091"
+      - "8100-8105:8100-8105"
+    command:
+      - middleManager
+    restart: always
+
+  router:
+#    image: duyhv2511/druid:0.21.1-mysql
+    container_name: router
+    build:
+      context: docker
+      dockerfile: druid.Dockerfile
+    volumes:
+      - router_var:/opt/druid/var
+      - ~/.credentials:/opt/druid/.credentials
+      - ./log:/opt/druid/log
+      - ./data:/opt/druid/datasource_files
+#      - ./docker/config:/opt/druid/conf/druid/cluster/_common
+    env_file:
+      - ./.env
+    depends_on:
+      - zookeeper
+      - db
+      - coordinator
+    ports:
+      - "8888:8888"
+    command:
+      - router
+    restart: always
